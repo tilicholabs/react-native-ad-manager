@@ -146,5 +146,8 @@
         }
       ]
     ]
+  },
+  "dependencies": {
+    "metro-config": "^0.80.1"
   }
 }
