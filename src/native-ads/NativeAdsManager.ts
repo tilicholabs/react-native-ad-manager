@@ -1,7 +1,7 @@
 import { NativeModules } from 'react-native';
 import type { TReactNodeHandleRef } from '../AdManagerTypes';
 
-const { CTKAdManageNativeManager } = NativeModules;
+const { CTKAdManageNativeManager, CTKAdManagerBannerAdCache } = NativeModules;
 
 export class NativeAdsManager {
   isValid: boolean;
@@ -30,4 +30,8 @@ export class NativeAdsManager {
   toJSON() {
     return this.adUnitID;
   }
+}
+
+export function clearStoredAdCache(): void {
+  CTKAdManagerBannerAdCache.clearStoredCache();
 }

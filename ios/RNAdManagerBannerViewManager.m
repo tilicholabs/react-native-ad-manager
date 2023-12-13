@@ -41,6 +41,8 @@ RCT_EXPORT_METHOD(loadBanner:(nonnull NSNumber *)reactTag)
 //RCT_REMAP_VIEW_PROPERTY(adUnitID, _bannerView.adUnitID, NSString)
 RCT_EXPORT_VIEW_PROPERTY(adSize, NSString)
 RCT_EXPORT_VIEW_PROPERTY(adUnitID, NSString)
+RCT_EXPORT_VIEW_PROPERTY(selectedCategory, NSString)  // Exposed selectedCategory to React
+RCT_EXPORT_VIEW_PROPERTY(adAtIndex, NSString)         // Exposed adAtIndex to React
 RCT_EXPORT_VIEW_PROPERTY(correlator, NSString)
 RCT_EXPORT_VIEW_PROPERTY(validAdSizes, NSArray)
 RCT_EXPORT_VIEW_PROPERTY(testDevices, NSArray)

@@ -7,6 +7,7 @@
 
 #include "RCTConvert+GADAdSize.h"
 #import "RNAdManagerUtils.h"
+#import "RNAdManagerBannerAdCache.h"
 
 @interface RNAdManagerBannerView () <GADBannerViewDelegate, GADAdSizeDelegate, GADAppEventDelegate>
 
@@ -23,6 +24,12 @@
     _bannerView.adSizeDelegate = nil;
     _bannerView.appEventDelegate = nil;
     _bannerView.rootViewController = nil;
+    // Remove the banner view from the cache when deallocating
+    // FIXME: Setting it to null when deallocating the object. Check if we have to store the Ad view in this case too.
+    [[RNAdManagerBannerAdCache sharedInstance] cacheBannerView:nil
+                                                     forAdUnitID:self.adUnitID
+                                                selectedCategory:self.selectedCategory
+                                                       adAtIndex:self.adAtIndex];
 }
 
 - (void)setAdUnitID:(NSString *)adUnitID
@@ -74,6 +81,21 @@
     if (_bannerView) {
         [_bannerView removeFromSuperview];
     }
+
+    // Check if a cached banner ad exists for the given adUnitID, selectedCategory, adAtIndex
+    GADBannerView *cachedBannerAd = [[RNAdManagerBannerAdCache sharedInstance] cachedBannerViewForAdUnitID:_adUnitID
+                                                                                          selectedCategory:_selectedCategory
+                                                                                                 adAtIndex:_adAtIndex];
+
+    if (cachedBannerAd) {
+        // If cached banner ad exists, use it and return
+        [self addSubview:cachedBannerAd];
+        _bannerView = cachedBannerAd;
+        [self handleAdReceivedForBannerView:cachedBannerAd];
+        return;
+    }
+
+    // If no cached banner ad, create a new one
 
     GADAdSize adSize = [RCTConvert GADAdSize:_adSize];
     GAMBannerView *bannerView;
@@ -152,6 +174,17 @@
 /// Tells the delegate an ad request loaded an ad.
 - (void)bannerViewDidReceiveAd:(nonnull GADBannerView *)bannerView
 {
+    // Store the created banner ad in the cache
+    [[RNAdManagerBannerAdCache sharedInstance] cacheBannerView:bannerView
+                                                     forAdUnitID:self.adUnitID
+                                                selectedCategory:self.selectedCategory
+                                                       adAtIndex:self.adAtIndex];
+
+    [self handleAdReceivedForBannerView:bannerView];
+}
+
+// Helper method to simulate bannerViewDidReceiveAd callback
+- (void)handleAdReceivedForBannerView:(GADBannerView *)bannerView {
     if (self.onSizeChange) {
         self.onSizeChange(@{
                             @"type": @"banner",

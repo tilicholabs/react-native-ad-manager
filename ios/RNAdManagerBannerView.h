@@ -9,6 +9,8 @@
 @property (nonatomic, copy) NSString *adSize;
 @property (nonatomic, strong) NSString *adUnitID;
 @property (nonatomic, copy) NSString *correlator;
+@property (nonatomic, copy) NSString *selectedCategory;
+@property (nonatomic, copy) NSString *adAtIndex;
 
 @property (nonatomic, copy) RCTBubblingEventBlock onSizeChange;
 @property (nonatomic, copy) RCTBubblingEventBlock onAppEvent;

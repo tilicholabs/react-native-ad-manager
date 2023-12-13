@@ -17,6 +17,7 @@ import {
   IAdManagerEventLoadedBanner,
   IAdManagerEventLoadedTemplate,
   IAdManagerEventLoadedNative,
+  clearStoredAdCache,
 } from 'react-native-ad-manager';
 import { BannerExample } from './BannerExample';
 import NativeAdView from './NativeAdView';
@@ -24,6 +25,8 @@ import NativeAdView from './NativeAdView';
 const TEST_AD_NATIVE = '/6499/example/native';
 const TEST_AD_INTERSTITIAL = '/6499/example/interstitial';
 const TEST_AD_BANNER = '/6499/example/banner';
+const TEST_AD_BANNER_2 = '/22746524730/Lokal_iOS_Test_1';
+const TEST_AD_BANNER_3 = '/22746524730/Lokal_iOS_Test_2';
 const TEST_AD_BANNER_FLUID = '/6499/example/APIDemo/Fluid';
 const TEST_AD_BANNER_ADAPTIVE = '/30497360/adaptive_banner_test_iu/backfill'; // '/30497360/adaptive_banner_test_iu/reservation'
 const TEST_AD_TEMPLATE = '/6499/example/native';
@@ -111,7 +114,15 @@ export default class Example extends React.Component<
               onAdLoaded={this.onAdLoaded}
               adSize="mediumRectangle"
               validAdSizes={['mediumRectangle']}
-              adUnitID={TEST_AD_BANNER}
+              selectedCategory={'abc'}
+              adAtIndex={'0'}
+              adUnitID={
+                index % 3 === 0
+                  ? TEST_AD_BANNER
+                  : index % 3 === 1
+                  ? TEST_AD_BANNER_2
+                  : TEST_AD_BANNER_3
+              }
               targeting={{
                 customTargeting: { group: 'nzme_user_test' },
                 categoryExclusions: ['media'],
@@ -351,6 +362,11 @@ export default class Example extends React.Component<
             <Button
               title="Add Banner - Adaptive"
               onPress={() => this.addAd('banner-adaptive')}
+              color={'#CC5500'}
+            />
+            <Button
+              title="Clear Ad cache"
+              onPress={() => clearStoredAdCache()}
               color={'#CC5500'}
             />
           </BannerExample>
