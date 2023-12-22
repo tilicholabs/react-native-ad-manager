@@ -91,6 +91,8 @@
         // If cached banner ad exists, use it and return
         [self addSubview:cachedBannerAd];
         _bannerView = cachedBannerAd;
+        _bannerView.delegate = self;
+        _bannerView.appEventDelegate = self;
         [self handleAdReceivedForBannerView:cachedBannerAd];
         return;
     }
