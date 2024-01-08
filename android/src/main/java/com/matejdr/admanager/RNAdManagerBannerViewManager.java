@@ -31,6 +31,8 @@ public class RNAdManagerBannerViewManager extends ViewGroupManager<BannerAdView>
     public static final String PROP_AD_SIZE = "adSize";
     public static final String PROP_VALID_AD_SIZES = "validAdSizes";
     public static final String PROP_AD_UNIT_ID = "adUnitID";
+    public static final String PROP_SELECTED_CATEGORY = "selectedCategory";
+    public static final String PROP_AD_AT_INDEX = "adAtIndex";
     public static final String PROP_TEST_DEVICES = "testDevices";
     public static final String PROP_TARGETING = "targeting";
     public static final String PROP_CORRELATOR = "correlator";
@@ -119,6 +121,16 @@ public class RNAdManagerBannerViewManager extends ViewGroupManager<BannerAdView>
     @ReactProp(name = PROP_AD_UNIT_ID)
     public void setPropAdUnitID(final BannerAdView view, final String adUnitID) {
         view.setAdUnitID(adUnitID);
+    }
+
+    @ReactProp(name = PROP_SELECTED_CATEGORY)
+    public void setPropSelectedCategory(final BannerAdView view, final String selectedCategory) {
+        view.setSelectedCategory(selectedCategory);
+    }
+
+    @ReactProp(name = PROP_AD_AT_INDEX)
+    public void setPropAdAtIndex(final BannerAdView view, final String adAtIndex) {
+        view.setAdAtIndex(adAtIndex);
     }
 
     @ReactProp(name = PROP_TEST_DEVICES)
