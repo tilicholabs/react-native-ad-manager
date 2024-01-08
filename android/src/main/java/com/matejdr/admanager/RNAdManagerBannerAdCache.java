@@ -1,3 +1,4 @@
+import android.util.Log;
 import com.google.android.gms.ads.admanager.AdManagerAdView;
 
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -7,22 +8,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ReactModule(name = "CTKAdManagerBannerAdCache")
-public class AdManagerBannerAdCache extends ReactContextBaseJavaModule {
+public class RNAdManagerBannerAdCache extends ReactContextBaseJavaModule {
 
     public static final String REACT_CLASS = "CTKAdManagerBannerAdCache";
 
-    private static AdManagerBannerAdCache sharedInstance;
+    private static RNAdManagerBannerAdCache sharedInstance;
     private Map<String, AdManagerAdView> bannerAdCache;
 
-    private AdManagerBannerAdCache() {
+    private RNAdManagerBannerAdCache() {
         bannerAdCache = new HashMap<>();
     }
 
-    public static AdManagerBannerAdCache getSharedInstance() {
+    public static RNAdManagerBannerAdCache getSharedInstance() {
         if (sharedInstance == null) {
-            synchronized (AdManagerBannerAdCache.class) {
+            synchronized (RNAdManagerBannerAdCache.class) {
                 if (sharedInstance == null) {
-                    sharedInstance = new AdManagerBannerAdCache();
+                    sharedInstance = new RNAdManagerBannerAdCache();
                 }
             }
         }
@@ -33,7 +34,7 @@ public class AdManagerBannerAdCache extends ReactContextBaseJavaModule {
         if (bannerView != null && adUnitID != null && selectedCategory != null && adIndex != null) {
             String resultKey = cacheKeyForAdUnitID(adUnitID, selectedCategory, adIndex);
             bannerAdCache.put(resultKey, bannerView);
-            Log.d("AdManagerBannerAdCache", "Stored bannerView: " + bannerView + " for adUnitID: " + adUnitID +
+            Log.d("RNAdManagerBannerAdCache", "Stored bannerView: " + bannerView + " for adUnitID: " + adUnitID +
                     " of selectedCategory: " + selectedCategory + " adAtIndex: " + adIndex);
         }
     }
@@ -43,7 +44,7 @@ public class AdManagerBannerAdCache extends ReactContextBaseJavaModule {
             String resultKey = cacheKeyForAdUnitID(adUnitID, selectedCategory, adIndex);
             AdManagerAdView cachedBannerView = bannerAdCache.get(resultKey);
             if (cachedBannerView != null) {
-                Log.d("AdManagerBannerAdCache", "Successfully fetched cachedBannerView: " + cachedBannerView +
+                Log.d("RNAdManagerBannerAdCache", "Successfully fetched cachedBannerView: " + cachedBannerView +
                         " for adUnitID: " + adUnitID + " of selectedCategory: " + selectedCategory +
                         " adAtIndex: " + adIndex);
                 return cachedBannerView;
@@ -59,7 +60,7 @@ public class AdManagerBannerAdCache extends ReactContextBaseJavaModule {
     @ReactMethod
     public void clearCache() {
         bannerAdCache.clear();
-        Log.d("AdManagerBannerAdCache", "Cleared cache Ad data");
+        Log.d("RNAdManagerBannerAdCache", "Cleared cache Ad data");
     }
 
     public void clearStoredCache() {
