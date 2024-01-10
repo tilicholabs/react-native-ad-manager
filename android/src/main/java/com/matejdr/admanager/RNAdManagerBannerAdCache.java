@@ -13,12 +13,12 @@ import java.util.Map;
 @ReactModule(name = "CTKAdManagerBannerAdCache")
 public class RNAdManagerBannerAdCache extends ReactContextBaseJavaModule {
 
+    public static final String REACT_CLASS = "CTKAdManagerBannerAdCache";
+
     @Override
     public String getName() {
         return REACT_CLASS;
     }
-
-    public static final String REACT_CLASS = "CTKAdManagerBannerAdCache";
 
     private static RNAdManagerBannerAdCache sharedInstance;
     private Map<String, AdManagerAdView> bannerAdCache;
@@ -65,12 +65,12 @@ public class RNAdManagerBannerAdCache extends ReactContextBaseJavaModule {
         return adUnitID + "_" + selectedCategory + "_" + adIndex;
     }
 
-    @ReactMethod
     public void clearCache() {
         bannerAdCache.clear();
         Log.d("RNAdManagerBannerAdCache", "Cleared cache Ad data");
     }
 
+    @ReactMethod
     public void clearStoredCache() {
         getSharedInstance().clearCache();
     }
