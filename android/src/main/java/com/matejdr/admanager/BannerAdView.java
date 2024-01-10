@@ -159,6 +159,9 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                     measurements.putInt("top", top);
                     ad.putMap("measurements", measurements);
 
+                    // Caching banner view
+                    RNAdManagerBannerAdCache.getSharedInstance().cacheBannerView(adManagerAdView, adUnitID, selectedCategory, adAtIndex);
+
                     sendEvent(RNAdManagerBannerViewManager.EVENT_AD_LOADED, ad);
                 }
 
@@ -243,6 +246,57 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
 
     public void loadBanner() {
         try {
+            // Using cached banner if present
+            AdManagerAdView cachedAdManagerAdView = RNAdManagerBannerAdCache.getSharedInstance().cachedBannerViewForAdUnitID(this.adUnitID, this.selectedCategory, this.adAtIndex);
+            if (cachedAdManagerAdView != null) {
+                this.removeView(this.adManagerAdView);
+                this.adManagerAdView = cachedAdManagerAdView;
+
+                if (isFluid()) {
+                    top = 0;
+                    left = 0;
+                    width = getWidth();
+                    height = getHeight();
+                } else {
+                    top = adManagerAdView.getTop();
+                    left = adManagerAdView.getLeft();
+                    width = adManagerAdView.getAdSize().getWidthInPixels(getContext());
+                    height = adManagerAdView.getAdSize().getHeightInPixels(getContext());
+                }
+
+                if (!isFluid()) {
+                    sendOnSizeChangeEvent();
+                }
+
+                WritableMap ad = Arguments.createMap();
+                ad.putString("type", "banner");
+
+                WritableMap gadSize = Arguments.createMap();
+                gadSize.putString("adSize", adManagerAdView.getAdSize().toString());
+                gadSize.putDouble("width", adManagerAdView.getAdSize().getWidth());
+                gadSize.putDouble("height", adManagerAdView.getAdSize().getHeight());
+                ad.putMap("gadSize", gadSize);
+
+                ad.putString("isFluid", String.valueOf(isFluid()));
+
+                WritableMap measurements = Arguments.createMap();
+                measurements.putInt("adWidth", width);
+                measurements.putInt("adHeight", height);
+                measurements.putInt("width", getMeasuredWidth());
+                measurements.putInt("height", getMeasuredHeight());
+                measurements.putInt("left", left);
+                measurements.putInt("top", top);
+                ad.putMap("measurements", measurements);
+
+                sendEvent(RNAdManagerBannerViewManager.EVENT_AD_LOADED, ad);
+                this.requestLayout();
+                this.addView(this.adManagerAdView);
+                this.requestLayout();
+                return;
+            }
+
+            // If cached banner view is null
+            // create a new ad request
             ArrayList<AdSize> adSizes = new ArrayList<AdSize>();
             if (this.adSize != null) {
                 adSizes.add(this.adSize);

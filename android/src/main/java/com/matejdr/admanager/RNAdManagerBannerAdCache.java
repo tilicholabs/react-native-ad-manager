@@ -1,6 +1,9 @@
+package com.matejdr.admanager;
+
 import android.util.Log;
 import com.google.android.gms.ads.admanager.AdManagerAdView;
 
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -9,6 +12,11 @@ import java.util.Map;
 
 @ReactModule(name = "CTKAdManagerBannerAdCache")
 public class RNAdManagerBannerAdCache extends ReactContextBaseJavaModule {
+
+    @Override
+    public String getName() {
+        return REACT_CLASS;
+    }
 
     public static final String REACT_CLASS = "CTKAdManagerBannerAdCache";
 
