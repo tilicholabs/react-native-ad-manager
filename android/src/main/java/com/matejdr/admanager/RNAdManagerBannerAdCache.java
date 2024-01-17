@@ -22,16 +22,19 @@ public class RNAdManagerBannerAdCache extends ReactContextBaseJavaModule {
 
     private static RNAdManagerBannerAdCache sharedInstance;
     private Map<String, AdManagerAdView> bannerAdCache;
+    private static ReactApplicationContext applicationContext;
 
-    private RNAdManagerBannerAdCache() {
+    public RNAdManagerBannerAdCache(ReactApplicationContext reactContext) {
+        super(reactContext);
+        applicationContext = reactContext;
         bannerAdCache = new HashMap<>();
     }
 
     public static RNAdManagerBannerAdCache getSharedInstance() {
         if (sharedInstance == null) {
             synchronized (RNAdManagerBannerAdCache.class) {
-                if (sharedInstance == null) {
-                    sharedInstance = new RNAdManagerBannerAdCache();
+                if (sharedInstance == null && applicationContext != null) {
+                    sharedInstance = new RNAdManagerBannerAdCache(applicationContext);
                 }
             }
         }

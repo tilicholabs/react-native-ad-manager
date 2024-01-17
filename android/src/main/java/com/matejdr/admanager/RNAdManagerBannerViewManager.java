@@ -38,6 +38,7 @@ public class RNAdManagerBannerViewManager extends ViewGroupManager<BannerAdView>
     public static final String PROP_CORRELATOR = "correlator";
 
     public static final String EVENT_SIZE_CHANGE = "onSizeChange";
+    public static final String EVENT_ON_AD_CLICKED = "onAdRecordClick";
     public static final String EVENT_AD_LOADED = "onAdLoaded";
     public static final String EVENT_AD_FAILED_TO_LOAD = "onAdFailedToLoad";
     public static final String EVENT_AD_OPENED = "onAdOpened";
@@ -84,13 +85,14 @@ public class RNAdManagerBannerViewManager extends ViewGroupManager<BannerAdView>
     public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
         MapBuilder.Builder<String, Object> builder = MapBuilder.builder();
         String[] events = {
-            EVENT_SIZE_CHANGE,
-            EVENT_AD_LOADED,
-            EVENT_AD_FAILED_TO_LOAD,
-            EVENT_AD_OPENED,
-            EVENT_AD_CLOSED,
-            EVENT_APP_EVENT,
-            EVENT_AD_RECORD_IMPRESSION
+                EVENT_SIZE_CHANGE,
+                EVENT_ON_AD_CLICKED,
+                EVENT_AD_LOADED,
+                EVENT_AD_FAILED_TO_LOAD,
+                EVENT_AD_OPENED,
+                EVENT_AD_CLOSED,
+                EVENT_APP_EVENT,
+                EVENT_AD_RECORD_IMPRESSION
         };
         for (int i = 0; i < events.length; i++) {
             builder.put(events[i], MapBuilder.of("registrationName", events[i]));
@@ -147,8 +149,8 @@ public class RNAdManagerBannerViewManager extends ViewGroupManager<BannerAdView>
 
         if (targetings.hasNextKey()) {
             for (
-                ReadableMapKeySetIterator it = targetingObjects.keySetIterator();
-                it.hasNextKey();
+                    ReadableMapKeySetIterator it = targetingObjects.keySetIterator();
+                    it.hasNextKey();
             ) {
                 String targetingType = it.nextKey();
 

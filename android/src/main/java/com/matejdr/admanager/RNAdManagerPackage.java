@@ -13,7 +13,8 @@ public class RNAdManagerPackage implements ReactPackage {
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         return Arrays.asList(
             new RNAdManageNativeManager(reactContext),
-            new RNAdManagerInterstitial(reactContext)
+            new RNAdManagerInterstitial(reactContext),
+            new RNAdManagerBannerAdCache(reactContext)
         );
     }
 

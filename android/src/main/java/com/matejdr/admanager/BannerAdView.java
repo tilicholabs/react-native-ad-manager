@@ -123,46 +123,11 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
             this.adManagerAdView.setAdListener(new AdListener() {
                 @Override
                 public void onAdLoaded() {
-                    if (isFluid()) {
-                        top = 0;
-                        left = 0;
-                        width = getWidth();
-                        height = getHeight();
-                    } else {
-                        top = adManagerAdView.getTop();
-                        left = adManagerAdView.getLeft();
-                        width = adManagerAdView.getAdSize().getWidthInPixels(getContext());
-                        height = adManagerAdView.getAdSize().getHeightInPixels(getContext());
-                    }
-
-                    if (!isFluid()) {
-                        sendOnSizeChangeEvent();
-                    }
-
-                    WritableMap ad = Arguments.createMap();
-                    ad.putString("type", "banner");
-
-                    WritableMap gadSize = Arguments.createMap();
-                    gadSize.putString("adSize", adManagerAdView.getAdSize().toString());
-                    gadSize.putDouble("width", adManagerAdView.getAdSize().getWidth());
-                    gadSize.putDouble("height", adManagerAdView.getAdSize().getHeight());
-                    ad.putMap("gadSize", gadSize);
-
-                    ad.putString("isFluid", String.valueOf(isFluid()));
-
-                    WritableMap measurements = Arguments.createMap();
-                    measurements.putInt("adWidth", width);
-                    measurements.putInt("adHeight", height);
-                    measurements.putInt("width", getMeasuredWidth());
-                    measurements.putInt("height", getMeasuredHeight());
-                    measurements.putInt("left", left);
-                    measurements.putInt("top", top);
-                    ad.putMap("measurements", measurements);
-
                     // Caching banner view
                     RNAdManagerBannerAdCache.getSharedInstance().cacheBannerView(adManagerAdView, adUnitID, selectedCategory, adAtIndex);
 
-                    sendEvent(RNAdManagerBannerViewManager.EVENT_AD_LOADED, ad);
+                    WritableMap event = Arguments.createMap();
+                    sendEvent(RNAdManagerBannerViewManager.EVENT_AD_LOADED, event);
                 }
 
                 @Override
@@ -208,7 +173,7 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                 }
 
             });
-            this.addView(this.adManagerAdView);
+            // this.addView(this.adManagerAdView);
         } catch (Exception e) {
             sendErrorEvent("✅💪Error found at ad manager when createAdView(): "+e.getMessage()+"!");
             this.onException(e);
@@ -246,11 +211,49 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
 
     public void loadBanner() {
         try {
-            // Using cached banner if present
+            // Using cached banner view
             AdManagerAdView cachedAdManagerAdView = RNAdManagerBannerAdCache.getSharedInstance().cachedBannerViewForAdUnitID(this.adUnitID, this.selectedCategory, this.adAtIndex);
             if (cachedAdManagerAdView != null) {
-                this.removeView(this.adManagerAdView);
+                // this.removeView(this.adManagerAdView);
+
+                // Following is to remove the cachedBannerView from its parent
+                // But it would be null always in our case, since we aren't adding the `adManagerAdView` as childView
+                // Check around commented line: 178
+                ReactViewGroup parentViewGroup = (ReactViewGroup) cachedAdManagerAdView.getParent();
+                if (parentViewGroup != null) {
+                    parentViewGroup.removeView(cachedAdManagerAdView);
+                }
+
                 this.adManagerAdView = cachedAdManagerAdView;
+                this.adManagerAdView.setAdListener(new AdListener() {
+
+                    @Override
+                    public void onAdClicked() {
+                        WritableMap event = Arguments.createMap();
+                        sendEvent(RNAdManagerBannerViewManager.EVENT_ON_AD_CLICKED, event);
+                    }
+
+                    @Override
+                    public void onAdOpened() {
+                        WritableMap event = Arguments.createMap();
+                        sendEvent(RNAdManagerBannerViewManager.EVENT_AD_OPENED, event);
+                    }
+
+                    @Override
+                    public void onAdClosed() {
+                        WritableMap event = Arguments.createMap();
+                        sendEvent(RNAdManagerBannerViewManager.EVENT_AD_CLOSED, event);
+                    }
+
+                    @Override
+                    public void onAdImpression() {
+                        WritableMap event = Arguments.createMap();
+                        sendEvent(RNAdManagerBannerViewManager.EVENT_AD_RECORD_IMPRESSION, event);
+                    }
+
+                });
+
+                this.addView(this.adManagerAdView);
 
                 if (isFluid()) {
                     top = 0;
@@ -258,10 +261,10 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                     width = getWidth();
                     height = getHeight();
                 } else {
-                    top = adManagerAdView.getTop();
-                    left = adManagerAdView.getLeft();
-                    width = adManagerAdView.getAdSize().getWidthInPixels(getContext());
-                    height = adManagerAdView.getAdSize().getHeightInPixels(getContext());
+                    top = this.adManagerAdView.getTop();
+                    left = this.adManagerAdView.getLeft();
+                    width = this.adManagerAdView.getAdSize().getWidthInPixels(getContext());
+                    height = this.adManagerAdView.getAdSize().getHeightInPixels(getContext());
                 }
 
                 if (!isFluid()) {
@@ -272,9 +275,9 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                 ad.putString("type", "banner");
 
                 WritableMap gadSize = Arguments.createMap();
-                gadSize.putString("adSize", adManagerAdView.getAdSize().toString());
-                gadSize.putDouble("width", adManagerAdView.getAdSize().getWidth());
-                gadSize.putDouble("height", adManagerAdView.getAdSize().getHeight());
+                gadSize.putString("adSize", this.adManagerAdView.getAdSize().toString());
+                gadSize.putDouble("width", this.adManagerAdView.getAdSize().getWidth());
+                gadSize.putDouble("height", this.adManagerAdView.getAdSize().getHeight());
                 ad.putMap("gadSize", gadSize);
 
                 ad.putString("isFluid", String.valueOf(isFluid()));
@@ -289,9 +292,6 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                 ad.putMap("measurements", measurements);
 
                 sendEvent(RNAdManagerBannerViewManager.EVENT_AD_LOADED, ad);
-                this.requestLayout();
-                this.addView(this.adManagerAdView);
-                this.requestLayout();
                 return;
             }
 
@@ -328,7 +328,6 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                     testDevicesList.add(testDevice);
                 }
                 RequestConfiguration requestConfiguration
-                    = new RequestConfiguration.Builder()
                     .setTestDeviceIds(testDevicesList)
                     .build();
                 MobileAds.setRequestConfiguration(requestConfiguration);
@@ -399,7 +398,6 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
             WritableMap params = Arguments.createMap();
             params.putString("error", errorMessage);
             currentRNcontext
-                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                 .emit("onError", params);
         } catch (Exception e) {
             //non-critical error, so ignore.
@@ -571,7 +569,6 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
             try {
                 if (isFluid()) {
                     adManagerAdView.measure(
-                        MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY),
                         MeasureSpec.makeMeasureSpec(getHeight(), MeasureSpec.EXACTLY)
                     );
                 } else {
